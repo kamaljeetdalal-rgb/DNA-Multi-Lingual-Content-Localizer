@@ -1,91 +1,105 @@
 import streamlit as st
 import os
+import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableSequence
 
-# ----------------------------
-# Page Config
-# ----------------------------
+# -----------------------------
+# PAGE CONFIG
+# -----------------------------
 st.set_page_config(
-    page_title="Multi-Lingual Content Localizer",
+    page_title="AI Cultural Transcreation System",
     page_icon="🌍",
     layout="centered"
 )
 
-st.title("🌍 Multi-Lingual Content Localizer")
-st.markdown("Localize your content using Gemini AI")
+st.title("🌍 AI Multi-Lingual Cultural Transcreation")
+st.write("Gemini-powered Localization & Transcreation System")
 
-# ----------------------------
-# API Key Setup
-# ----------------------------
-if "GOOGLE_API_KEY" in st.secrets:
-    os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
-else:
-    st.warning("Please add your GOOGLE_API_KEY in Streamlit secrets.")
-    st.stop()
+# -----------------------------
+# LOAD API KEY (Streamlit Cloud)
+# -----------------------------
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 
-# ----------------------------
-# Model
-# ----------------------------
-model = ChatGoogleGenerativeAI(
-    model="gemini-1.5-flash",
-    temperature=0.7
+# -----------------------------
+# INITIALIZE GEMINI MODEL
+# -----------------------------
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite",
+    temperature=0.6,
+    google_api_key=GOOGLE_API_KEY
 )
 
-# ----------------------------
-# Prompt Template
-# ----------------------------
-prompt_template = PromptTemplate(
+# -----------------------------
+# PROMPT TEMPLATE
+# -----------------------------
+structured_prompt = PromptTemplate(
     input_variables=["source_text", "target_language", "region"],
     template="""
-You are a professional localization expert.
+You are a professional cultural transcreation expert.
 
-Translate the following text into {target_language} for the {region} region.
+Your task is to transcreate the given content into {target_language}
+for the region: {region}.
 
-Make it culturally appropriate and natural sounding.
+Ensure:
+- Natural, culturally appropriate tone
+- Native style of speech
+- Emotional alignment with local expression
 
-Text:
-{source_text}
+Return output strictly in valid JSON format with the following structure:
+
+{{
+  "original_text": "{source_text}",
+  "target_language": "{target_language}",
+  "region": "{region}",
+  "culturally_adapted_text": "<final adapted text>",
+  "tone": "<describe tone used>",
+  "cultural_notes": "<brief explanation of cultural adaptation>"
+}}
 """
 )
 
-# ----------------------------
-# LCEL Chain
-# ----------------------------
-chain = RunnableSequence(
-    prompt_template,
-    model,
-    StrOutputParser()
-)
+chain = structured_prompt | llm
 
-# ----------------------------
-# UI Inputs
-# ----------------------------
-source_text = st.text_area("Enter text to localize")
+# -----------------------------
+# UI INPUTS
+# -----------------------------
+source_text = st.text_area("Enter Source Text")
+target_language = st.text_input("Target Language", value="Hindi")
+region = st.text_input("Region", value="India")
 
-target_language = st.selectbox(
-    "Select Target Language",
-    ["Hindi", "Spanish", "French", "German", "Japanese"]
-)
+# -----------------------------
+# RUN BUTTON
+# -----------------------------
+if st.button("Generate Transcreation"):
 
-region = st.text_input("Target Region (e.g., India, Mexico, Canada)")
-
-# ----------------------------
-# Generate Button
-# ----------------------------
-if st.button("Localize Content"):
-    if source_text and region:
-        with st.spinner("Localizing..."):
-            result = chain.invoke({
+    if not source_text:
+        st.warning("Please enter source text.")
+    else:
+        with st.spinner("Generating culturally adapted content..."):
+            response = chain.invoke({
                 "source_text": source_text,
                 "target_language": target_language,
                 "region": region
             })
-        st.success("Localized Content:")
-        st.write(result)
-    else:
 
-        st.error("Please provide all inputs.")
+            try:
+                output = json.loads(response.content)
 
+                st.success("Transcreation Generated Successfully!")
+
+                st.subheader("🌎 Culturally Adapted Text")
+                st.write(output["culturally_adapted_text"])
+
+                st.subheader("🎭 Tone")
+                st.write(output["tone"])
+
+                st.subheader("📝 Cultural Notes")
+                st.write(output["cultural_notes"])
+
+                st.subheader("📦 Full JSON Output")
+                st.json(output)
+
+            except Exception:
+                st.error("Model did not return valid JSON.")
+                st.write(response.content)
