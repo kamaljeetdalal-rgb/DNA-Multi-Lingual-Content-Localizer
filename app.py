@@ -1,7 +1,9 @@
 import streamlit as st
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnableSequence
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnableSequence
 
@@ -86,4 +88,5 @@ if st.button("Localize Content"):
         st.success("Localized Content:")
         st.write(result)
     else:
+
         st.error("Please provide all inputs.")
