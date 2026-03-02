@@ -1,3 +1,4 @@
+
 import streamlit as st
 import os
 
@@ -55,20 +56,30 @@ class TranscreationOutput(BaseModel):
 structured_llm = llm.with_structured_output(TranscreationOutput)
 
 # -------------------------
-# Prompt Template
+# Strict Prompt Template (Prevents Hallucination)
 # -------------------------
 structured_prompt = PromptTemplate(
     input_variables=["source_text", "target_language", "region"],
     template="""
 You are a professional cultural transcreation expert.
 
-Your task is to transcreate the given content into {target_language}
-for the region: {region}.
+STRICT INSTRUCTIONS:
+- You must ONLY transcreate the exact meaning of the provided source text.
+- Do NOT invent new content.
+- Do NOT replace it with a greeting.
+- Do NOT generalize.
+- Preserve the original intent and meaning exactly.
+- Adapt culturally, but do not change topic.
+- If the source text is a statement, keep it a statement.
+- If it is a question, keep it a question.
 
-Ensure:
-- Natural, culturally appropriate tone
-- Native style of speech
-- Emotional alignment with local expression
+Source text:
+"{source_text}"
+
+Target language: {target_language}
+Region: {region}
+
+Provide culturally adapted output while preserving original meaning.
 """
 )
 
