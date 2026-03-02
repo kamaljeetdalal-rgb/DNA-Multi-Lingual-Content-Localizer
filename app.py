@@ -1,11 +1,9 @@
 import streamlit as st
 import os
-import json
-import re
 
+from pydantic import BaseModel
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
-from langchain_core.runnables import RunnableSequence
 
 # -------------------------
 # Streamlit Page Config
@@ -20,11 +18,11 @@ st.title("🌍 AI Multi-Lingual Content Localizer")
 st.markdown("Transcreate & culturally adapt your content using Gemini AI")
 
 # -------------------------
-# API Key Setup (Cloud + Local Safe)
+# API Key Setup (Cloud + Local)
 # -------------------------
 google_api_key = None
 
-# 1️⃣ Streamlit Cloud Secret (set once in settings)
+# 1️⃣ Streamlit Cloud Secret (set once)
 if "GOOGLE_API_KEY" in st.secrets:
     google_api_key = st.secrets["GOOGLE_API_KEY"]
 
@@ -37,7 +35,7 @@ if not google_api_key:
     st.stop()
 
 # -------------------------
-# Initialize Gemini
+# Initialize Gemini Model
 # -------------------------
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
@@ -46,7 +44,18 @@ llm = ChatGoogleGenerativeAI(
 )
 
 # -------------------------
-# Structured Prompt
+# Structured Output Schema
+# -------------------------
+class TranscreationOutput(BaseModel):
+    culturally_adapted_text: str
+    tone: str
+    cultural_notes: str
+
+# Force structured output
+structured_llm = llm.with_structured_output(TranscreationOutput)
+
+# -------------------------
+# Prompt Template
 # -------------------------
 structured_prompt = PromptTemplate(
     input_variables=["source_text", "target_language", "region"],
@@ -60,18 +69,11 @@ Ensure:
 - Natural, culturally appropriate tone
 - Native style of speech
 - Emotional alignment with local expression
-
-Return output strictly in valid JSON format with the following structure:
-
-{{
-  "culturally_adapted_text": "<final adapted text>",
-  "tone": "<describe tone used>",
-  "cultural_notes": "<brief explanation of cultural adaptation>"
-}}
 """
 )
 
-chain = structured_prompt | llm
+# LCEL Chain
+chain = structured_prompt | structured_llm
 
 # -------------------------
 # User Inputs
@@ -98,37 +100,22 @@ if st.button("🚀 Generate Transcreation"):
     else:
         with st.spinner("Generating culturally adapted content..."):
             try:
-                response = chain.invoke({
+                result = chain.invoke({
                     "source_text": source_text,
                     "target_language": target_language,
                     "region": region
                 })
 
-                raw_text = response.content.strip()
+                st.success("✅ Transcreation Generated Successfully!")
 
-                # Remove markdown formatting if present
-                if raw_text.startswith("```"):
-                    raw_text = re.sub(r"```json|```", "", raw_text).strip()
+                st.subheader("🌎 Culturally Adapted Text")
+                st.write(result.culturally_adapted_text)
 
-                json_match = re.search(r"\{.*\}", raw_text, re.DOTALL)
+                st.subheader("🎭 Tone")
+                st.write(result.tone)
 
-                if json_match:
-                    output = json.loads(json_match.group(0))
-
-                    st.success("✅ Transcreation Generated Successfully!")
-
-                    st.subheader("🌎 Culturally Adapted Text")
-                    st.write(output.get("culturally_adapted_text", ""))
-
-                    st.subheader("🎭 Tone")
-                    st.write(output.get("tone", ""))
-
-                    st.subheader("📝 Cultural Notes")
-                    st.write(output.get("cultural_notes", ""))
-
-                else:
-                    st.error("Could not extract valid JSON.")
-                    st.write(raw_text)
+                st.subheader("📝 Cultural Notes")
+                st.write(result.cultural_notes)
 
             except Exception as e:
                 st.error(f"Error: {e}")
