@@ -20,17 +20,20 @@ st.title("🌍 AI Multi-Lingual Content Localizer")
 st.markdown("Transcreate & culturally adapt your content using Gemini AI")
 
 # -------------------------
-# Sidebar - API Key
+# API Key Setup (Cloud + Local Safe)
 # -------------------------
-st.sidebar.header("🔐 Configuration")
+google_api_key = None
 
-api_key = st.sidebar.text_input(
-    "Enter your GOOGLE API Key",
-    type="password"
-)
+# 1️⃣ Streamlit Cloud Secret (set once in settings)
+if "GOOGLE_API_KEY" in st.secrets:
+    google_api_key = st.secrets["GOOGLE_API_KEY"]
 
-if not api_key:
-    st.warning("Please enter your Google API Key in the sidebar.")
+# 2️⃣ Local environment variable fallback
+elif os.getenv("GOOGLE_API_KEY"):
+    google_api_key = os.getenv("GOOGLE_API_KEY")
+
+if not google_api_key:
+    st.error("GOOGLE_API_KEY not found. Add it in Streamlit secrets or environment variable.")
     st.stop()
 
 # -------------------------
@@ -39,7 +42,7 @@ if not api_key:
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=0.6,
-    google_api_key=api_key
+    google_api_key=google_api_key
 )
 
 # -------------------------
@@ -61,9 +64,6 @@ Ensure:
 Return output strictly in valid JSON format with the following structure:
 
 {{
-  "original_text": "{source_text}",
-  "target_language": "{target_language}",
-  "region": "{region}",
   "culturally_adapted_text": "<final adapted text>",
   "tone": "<describe tone used>",
   "cultural_notes": "<brief explanation of cultural adaptation>"
@@ -106,7 +106,7 @@ if st.button("🚀 Generate Transcreation"):
 
                 raw_text = response.content.strip()
 
-                # Clean markdown blocks if any
+                # Remove markdown formatting if present
                 if raw_text.startswith("```"):
                     raw_text = re.sub(r"```json|```", "", raw_text).strip()
 
@@ -125,9 +125,6 @@ if st.button("🚀 Generate Transcreation"):
 
                     st.subheader("📝 Cultural Notes")
                     st.write(output.get("cultural_notes", ""))
-
-                    st.subheader("📦 Full JSON Output")
-                    st.json(output)
 
                 else:
                     st.error("Could not extract valid JSON.")
