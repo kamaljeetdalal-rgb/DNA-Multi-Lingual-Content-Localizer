@@ -1,38 +1,50 @@
 import streamlit as st
 import os
 import json
+import re
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnableSequence
 
-# -----------------------------
-# PAGE CONFIG
-# -----------------------------
+# -------------------------
+# Streamlit Page Config
+# -------------------------
 st.set_page_config(
-    page_title="AI Cultural Transcreation System",
+    page_title="AI Multi-Lingual Content Localizer",
     page_icon="🌍",
-    layout="centered"
+    layout="wide"
 )
 
-st.title("🌍 AI Multi-Lingual Cultural Transcreation")
-st.write("Gemini-powered Localization & Transcreation System")
+st.title("🌍 AI Multi-Lingual Content Localizer")
+st.markdown("Transcreate & culturally adapt your content using Gemini AI")
 
-# -----------------------------
-# LOAD API KEY (Streamlit Cloud)
-# -----------------------------
-GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+# -------------------------
+# Sidebar - API Key
+# -------------------------
+st.sidebar.header("🔐 Configuration")
 
-# -----------------------------
-# INITIALIZE GEMINI MODEL
-# -----------------------------
+api_key = st.sidebar.text_input(
+    "Enter your GOOGLE API Key",
+    type="password"
+)
+
+if not api_key:
+    st.warning("Please enter your Google API Key in the sidebar.")
+    st.stop()
+
+# -------------------------
+# Initialize Gemini
+# -------------------------
 llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash-lite",
+    model="gemini-2.5-flash",
     temperature=0.6,
-    google_api_key=GOOGLE_API_KEY
+    google_api_key=api_key
 )
 
-# -----------------------------
-# PROMPT TEMPLATE
-# -----------------------------
+# -------------------------
+# Structured Prompt
+# -------------------------
 structured_prompt = PromptTemplate(
     input_variables=["source_text", "target_language", "region"],
     template="""
@@ -61,45 +73,65 @@ Return output strictly in valid JSON format with the following structure:
 
 chain = structured_prompt | llm
 
-# -----------------------------
-# UI INPUTS
-# -----------------------------
-source_text = st.text_area("Enter Source Text")
-target_language = st.text_input("Target Language", value="Hindi")
-region = st.text_input("Region", value="India")
+# -------------------------
+# User Inputs
+# -------------------------
+st.subheader("✍️ Enter Content")
 
-# -----------------------------
-# RUN BUTTON
-# -----------------------------
-if st.button("Generate Transcreation"):
+source_text = st.text_area("Source Text")
 
-    if not source_text:
-        st.warning("Please enter source text.")
+col1, col2 = st.columns(2)
+
+with col1:
+    target_language = st.text_input("Target Language", placeholder="e.g., Hindi")
+
+with col2:
+    region = st.text_input("Region", placeholder="e.g., India")
+
+# -------------------------
+# Generate Button
+# -------------------------
+if st.button("🚀 Generate Transcreation"):
+
+    if not source_text or not target_language or not region:
+        st.error("Please fill all fields.")
     else:
         with st.spinner("Generating culturally adapted content..."):
-            response = chain.invoke({
-                "source_text": source_text,
-                "target_language": target_language,
-                "region": region
-            })
-
             try:
-                output = json.loads(response.content)
+                response = chain.invoke({
+                    "source_text": source_text,
+                    "target_language": target_language,
+                    "region": region
+                })
 
-                st.success("Transcreation Generated Successfully!")
+                raw_text = response.content.strip()
 
-                st.subheader("🌎 Culturally Adapted Text")
-                st.write(output["culturally_adapted_text"])
+                # Clean markdown blocks if any
+                if raw_text.startswith("```"):
+                    raw_text = re.sub(r"```json|```", "", raw_text).strip()
 
-                st.subheader("🎭 Tone")
-                st.write(output["tone"])
+                json_match = re.search(r"\{.*\}", raw_text, re.DOTALL)
 
-                st.subheader("📝 Cultural Notes")
-                st.write(output["cultural_notes"])
+                if json_match:
+                    output = json.loads(json_match.group(0))
 
-                st.subheader("📦 Full JSON Output")
-                st.json(output)
+                    st.success("✅ Transcreation Generated Successfully!")
 
-            except Exception:
-                st.error("Model did not return valid JSON.")
-                st.write(response.content)
+                    st.subheader("🌎 Culturally Adapted Text")
+                    st.write(output.get("culturally_adapted_text", ""))
+
+                    st.subheader("🎭 Tone")
+                    st.write(output.get("tone", ""))
+
+                    st.subheader("📝 Cultural Notes")
+                    st.write(output.get("cultural_notes", ""))
+
+                    st.subheader("📦 Full JSON Output")
+                    st.json(output)
+
+                else:
+                    st.error("Could not extract valid JSON.")
+                    st.write(raw_text)
+
+            except Exception as e:
+                st.error(f"Error: {e}")
