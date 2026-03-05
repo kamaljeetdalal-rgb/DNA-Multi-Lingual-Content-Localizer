@@ -305,7 +305,8 @@ if generate:
             with col1:
                 st.markdown('<div class="result-card">', unsafe_allow_html=True)
                 st.markdown('<p class="result-title">🌎 Adapted Text</p>', unsafe_allow_html=True)
-                st.write(result.culturally_adapted_text)
+                st.markdown(f'<p style = "color:white;">{result.culturally_adapted_text}</p>', unsafe_allow_html=True)
+                #st.write(result.culturally_adapted_text)
                 st.markdown('</div>', unsafe_allow_html=True)
 
             with col2:
@@ -320,4 +321,5 @@ if generate:
                 st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
