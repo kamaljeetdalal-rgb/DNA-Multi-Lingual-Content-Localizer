@@ -38,7 +38,7 @@ def set_background(image_file):
     except:
         pass
 
-set_background("bg.jpg")
+set_background("bg1.jpg")
 
 # ------------------------------------------------
 # GLOBAL UI STYLING
@@ -312,14 +312,17 @@ if generate:
             with col2:
                 st.markdown('<div class="result-card">', unsafe_allow_html=True)
                 st.markdown('<p class="result-title">🎭 Tone</p>', unsafe_allow_html=True)
-                st.write(result.tone)
+                st.markdown(f'<p style = "color:white;">{result.tone}</p>', unsafe_allow_html=True)
+                #st.write(result.tone)
                 st.markdown('</div>', unsafe_allow_html=True)
 
             with col3:
                 st.markdown('<div class="result-card">', unsafe_allow_html=True)
                 st.markdown('<p class="result-title">📝 Cultural Notes</p>', unsafe_allow_html=True)
-                st.write(result.cultural_notes)
+                 st.markdown(f'<p style = "color:white;">{result.cultural_notes}</p>', unsafe_allow_html=True)
+                #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
