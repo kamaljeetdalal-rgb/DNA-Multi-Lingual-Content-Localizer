@@ -55,7 +55,7 @@ background: linear-gradient(90deg,#06b6d4,#6366f1,#a855f7);
 background-clip:text;
 -webkit-background-clip:text;
 color:transparent;
-margin-bottom:10px;
+margin-bottom:0px;
 }
 
 /* SUBTITLE */
@@ -335,6 +335,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
