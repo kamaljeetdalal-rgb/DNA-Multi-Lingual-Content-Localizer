@@ -38,7 +38,7 @@ def set_background(image_file):
     except:
         pass
 
-set_background("bg1.jpg")
+set_background("bg.jpg")
 
 # ------------------------------------------------
 # GLOBAL UI STYLING
@@ -320,3 +320,4 @@ if generate:
                 st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
