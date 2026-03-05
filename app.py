@@ -237,8 +237,8 @@ region_language_map = {
 # ------------------------------------------------
 st.markdown('<div class="glass">', unsafe_allow_html=True)
 
-st.subheader("✍️ Enter Content")
-
+#st.subheader("✍️ Enter Content")
+st.markdown(f'<p style = "color:white;">"✍️ Enter Content"</p>', unsafe_allow_html=True)
 source_text = st.text_area(
 "Source Text",
 placeholder="Type or paste the content you want to culturally adapt...",
@@ -332,6 +332,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
