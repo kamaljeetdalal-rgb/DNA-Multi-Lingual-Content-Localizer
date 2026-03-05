@@ -61,7 +61,7 @@ margin-bottom:10px;
 /* SUBTITLE */
 p.subtitle{
 text-align:center;
-font-size:32px;
+font-size:64px;
 font-weight:500;
 color:white;
 margin-bottom:20px;
@@ -335,6 +335,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
