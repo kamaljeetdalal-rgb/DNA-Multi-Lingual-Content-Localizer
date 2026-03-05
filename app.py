@@ -302,8 +302,8 @@ if generate:
             div[role="alert"][class*="stAlert"]{
                 box-shadow:
                     0 6px 18px rgba(0, 0, 0, 0.22),
-                    0 0 18px rgba(46, 116, 67, 0.45), 
-                    0 0 36px rgba(46, 116, 67, 0.30);
+                    0 0 16px rgba(255, 255, 255, 0.40), 
+                    0 0 32px rgba(255, 255, 255, 0.25);
                 border-radius: 12px !important;}
             </style>
             """, unsafe_allow_html=True)
@@ -332,6 +332,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
