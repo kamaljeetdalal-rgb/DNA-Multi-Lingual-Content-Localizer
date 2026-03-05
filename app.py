@@ -64,7 +64,7 @@ text-align:center;
 font-size:36px;
 font-weight:500;
 color:white;
-margin-top:5px;
+margin-top: 5px !important;
 margin-bottom:10px;
 }
 
@@ -336,6 +336,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
