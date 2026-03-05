@@ -61,10 +61,10 @@ margin-bottom:10px;
 /* SUBTITLE */
 p.subtitle{
 text-align:center;
-font-size:64px;
-font-weight:500;
+font-size:40px;
+font-weight:800;
 color:white;
-margin-bottom:20px;
+margin-bottom:10px;
 }
 
 /* GLASS CARD */
@@ -335,6 +335,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
