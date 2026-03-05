@@ -319,10 +319,11 @@ if generate:
             with col3:
                 st.markdown('<div class="result-card">', unsafe_allow_html=True)
                 st.markdown('<p class="result-title">📝 Cultural Notes</p>', unsafe_allow_html=True)
-                 st.markdown(f'<p style = "color:white;">{result.cultural_notes}</p>', unsafe_allow_html=True)
+                st.markdown(f'<p style = "color:white;">{result.cultural_notes}</p>', unsafe_allow_html=True)
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
