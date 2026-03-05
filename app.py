@@ -237,7 +237,7 @@ region_language_map = {
 # ------------------------------------------------
 st.markdown('<div class="glass">', unsafe_allow_html=True)
 st.markdown("""
-            <h3 style='color:white; text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);'>
+            <h3 style='color:white;'>
                 ✍️ Enter Content
             </h3>
             """, unsafe_allow_html=True)
@@ -335,6 +335,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
