@@ -55,7 +55,8 @@ background: linear-gradient(90deg,#06b6d4,#6366f1,#a855f7);
 background-clip:text;
 -webkit-background-clip:text;
 color:transparent;
-margin-bottom:10px;
+margin-top: 0px !important;
+margin-bottom: 0px !important;
 }
 
 /* SUBTITLE */
@@ -65,7 +66,7 @@ font-size:36px;
 font-weight:500;
 color:white;
 margin-top: 5px !important;
-margin-bottom:10px;
+margin-bottom:10px !important;
 }
 
 /* GLASS CARD */
@@ -336,6 +337,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
