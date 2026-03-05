@@ -236,9 +236,12 @@ region_language_map = {
 # INPUT UI
 # ------------------------------------------------
 st.markdown('<div class="glass">', unsafe_allow_html=True)
-
+st.markdown("""
+            <h3 style='color:white; text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);'>
+                ✍️ Enter Content
+            </h3>
+            """, unsafe_allow_html=True)
 #st.subheader("✍️ Enter Content")
-st.subheader(f'<p style = "color:white;">✍️ Enter Content</p>', unsafe_allow_html=True)
 source_text = st.text_area(
 "Source Text",
 placeholder="Type or paste the content you want to culturally adapt...",
@@ -332,6 +335,7 @@ if generate:
                 #st.write(result.cultural_notes)
 
                 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
