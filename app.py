@@ -131,6 +131,7 @@ margin-top:20px;
 font-size:22px;
 font-weight:700;
 margin-bottom:20px;
+color:white !important;
 }
 
 </style>
@@ -317,4 +318,5 @@ if generate:
                 st.markdown('<div class="result-card">', unsafe_allow_html=True)
                 st.markdown('<p class="result-title">📝 Cultural Notes</p>', unsafe_allow_html=True)
                 st.write(result.cultural_notes)
+
                 st.markdown('</div>', unsafe_allow_html=True)
